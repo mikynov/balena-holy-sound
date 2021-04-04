@@ -1,0 +1,6 @@
+[submodule "balena-sound"]
+	path = balena-sound
+	url = https://github.com/balenalabs/balena-sound.git
+[submodule "balena-pihole"]
+	path = balena-pihole
+	url = https://github.com/klutchell/balena-pihole.git

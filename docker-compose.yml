@@ -1,0 +1,111 @@
+version: "2.1"
+
+volumes:
+  # **balena-pihole**
+  pihole_config:
+  dnsmasq_config:
+  # **balena-sound**
+  spotifycache:
+
+services:
+  # **balena-pihole**
+  # https://hub.docker.com/r/pihole/pihole
+  pihole:
+    build: ./balena-pihole/pihole
+    privileged: true
+    volumes:
+      - "pihole_config:/etc/pihole"
+      - "dnsmasq_config:/etc/dnsmasq.d"
+    dns:
+      - "127.0.0.1"
+      - "1.1.1.1"
+    network_mode: host
+
+  # https://github.com/klutchell/unbound-dnscrypt
+  # Recursive DNS, not used
+  # unbound:
+  #   build: ./balena-pihole/unbound
+  #   privileged: true
+  #   ports:
+  #     - "5053:5053/tcp"
+  #     - "5053:5053/udp"
+
+  # https://github.com/balenablocks/fbcp
+  # Display driver, not used
+  # fbcp:
+  #   image: balenablocks/fbcp:1.0.0
+  #   privileged: true
+
+  # prevent plymouth from blocking fbcp
+  # https://github.com/klutchell/balena-pihole/issues/25
+  # https://github.com/balena-os/meta-balena/issues/1772
+  dbus:
+    build: ./balena-pihole/dbus
+    restart: on-failure
+    labels:
+        io.balena.features.dbus: "1"
+
+  # **balena-sound**
+  # Core services
+  audio:
+    build: ./balena-sound/core/audio
+    privileged: true
+    labels:
+      io.balena.features.dbus: 1
+    ports:
+      - 4317:4317
+
+  sound-supervisor:
+    build: ./balena-sound/core/sound-supervisor
+    network_mode: host
+    ports:
+      - 3000:3000
+    labels:
+      io.balena.features.supervisor-api: 1
+
+  # Disable Multiroom with SOUND_MODE=STANDALONE
+  # See https://sound.balenalabs.io/docs/customization/
+  multiroom-server:
+    build: ./balena-sound/core/multiroom/server
+    restart: on-failure
+    ports:
+      - 1704:1704
+      - 1705:1705
+      - 1780:1780
+
+  multiroom-client:
+    build: ./balena-sound/core/multiroom/client
+    restart: on-failure
+
+  # Plugins
+  bluetooth:
+    build: ./balena-sound/plugins/bluetooth
+    restart: on-failure
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    labels:
+      io.balena.features.dbus: 1
+
+  airplay:
+    build: ./balena-sound/plugins/airplay
+    restart: on-failure
+    network_mode: host
+    privileged: true
+    labels:
+      io.balena.features.dbus: 1
+
+  spotify:
+    build: ./balena-sound/plugins/spotify
+    restart: on-failure
+    privileged: true
+    network_mode: host
+    volumes:
+      - spotifycache:/var/cache/raspotify
+
+  upnp:
+    build: ./balena-sound/plugins/upnp
+    restart: on-failure
+    network_mode: host
+    ports:
+      - 49494:49494
