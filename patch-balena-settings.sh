@@ -29,7 +29,7 @@ DESCRIPTION
      --gw           Default gateway IP address
 
 EXAMPLES
-    Set the hostname 'spongeboob' and IP address with 255.255.0.0 netmask
+    Set the hostname 'spongebob' and IP address with 255.255.0.0 netmask
     to balenaOS boot mounted on /mnt/balenaOS:
 
         ${0} --hostname spongebob --ip 192.168.1.2/16 --gw 192.168.1.1 /mnt/balenaOS
