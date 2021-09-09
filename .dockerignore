@@ -1,0 +1,5 @@
+# balena-sound/.dockerignore
+balena-sound/docs
+balena-sound/images
+balena-sound/.git
+balena-sound/.github

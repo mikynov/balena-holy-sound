@@ -14,26 +14,33 @@ Mix [Pi-hole](https://pi-hole.net/) and [balenaSound](https://sound.balenalabs.i
 
 * Create new application **holy-sound** in [balenaCloud](https://www.balena.io/cloud/)
 
-* Set the following _Application environment variables_
+* Set the following _Fleet (application) Variables_
 
-    | Name                  | Value             | Note 
-    |-----------------------|-------------------|------
-    | ServerIP              | 192.168.1.2       | Device IP address
-    | WEBPASSWORD           | secret            | Password to access Pi-hole Web Interface at [http://\<ServerIP\>/admin/](http://ServerIP/admin/)
+    | Name                  | Value          | Note 
+    |-----------------------|----------------|------
     | PIHOLE_DNS_           | 208.67.222.222;208.67.220.220 | Upstream DNS (where a non-blocked DNS queries will be forwarded)
-    | TZ                    | Continent/City    | Timezone
-    | SOUND_MODE            | STANDALONE        | Disable [Multi-room](https://sound.balenalabs.io/docs/usage#modes-of-operation) (only single device playing)
-    | BLUETOOTH_DEVICE_NAME | balenaSound       | How the device will be shown in Bluetooth connections
-    | SOUND_DEVICE_NAME     | balenaPlayer      | Spotify Connect and AirPlay name
-    | SOUND_SPOTIFY_BITRATE | 320               | Spotify playback bitrate (default is 160)
+    | SOUND_MODE            | STANDALONE     | Disable [Multi-room](https://sound.balenalabs.io/docs/usage#modes-of-operation) (only single device playing)
+    | SOUND_SPOTIFY_BITRATE | 320            | Spotify playback bitrate (default is 160)
+    | SOUND_SUPERVISOR_PORT | 8081           | Port for API and UI of Sound supervisor (default is 80 what collide with Pi-hole UI)
+    | TZ                    | Continent/City | Timezone
 
-* Set the following _Fleet configuration_ (in _CUSTOM CONFIGURATION VARIABLES_ section)
+* Add device
+
+* Set the following _Device Variables_
+
+    | Name                       | Value        | Note 
+    |----------------------------|--------------|------
+    | BLUETOOTH_DEVICE_NAME      | balenaSound  | How the device will be shown in Bluetooth connections
+    | ServerIP                   | 192.168.1.2  | Device IP address
+    | SOUND_DEVICE_NAME          | balenaPlayer | Spotify Connect and AirPlay name
+    | SOUND_SPOTIFY_ENABLE_CACHE | true         | Enable caching (only for devices with enough disk space)
+    | WEBPASSWORD                | secret       | Password to access Pi-hole Web Interface at [http://\<ServerIP\>/admin/](http://ServerIP/admin/)
+
+* Set the following _Device Configuration_ (in _CUSTOM CONFIGURATION VARIABLES_ section)
 
     | Name                         | Value             | Note 
     |------------------------------|-------------------|------
     | BALENA_HOST_CONFIG_dtoverlay | hifiberry-dacplus | Value from supported [DAC boards](https://sound.balenalabs.io/docs/audio-interfaces#dac-boards)
-
-* Add device
 
 * Download and flash balenaOS image
 
@@ -71,7 +78,7 @@ Mix [Pi-hole](https://pi-hole.net/) and [balenaSound](https://sound.balenalabs.i
 
 * Build and push new **holy-sound** application release to balenaCloud
 
-        balena push holy-sound
+        balena push holy-sound --multi-dockerignore
 
 ## Links
 

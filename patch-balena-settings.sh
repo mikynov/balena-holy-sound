@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-readonly TRACE=${TRACE:-}
-[[ "${TRACE}" ]] && set -o xtrace
+readonly TRACE="${TRACE:-}"
+[[ -n "${TRACE}" ]] && set -o xtrace
 set -o errexit
 set -o errtrace
 set -o nounset
@@ -9,8 +9,9 @@ set -o pipefail
 set -o noclobber
 IFS=$'\n\t'
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC2034
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 
 _help() {
     cat <<EOF
