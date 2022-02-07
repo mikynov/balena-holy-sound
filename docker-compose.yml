@@ -11,7 +11,7 @@ services:
   # **balena-pihole**
   # https://hub.docker.com/r/pihole/pihole
   pihole:
-    build: ./balena-pihole/pihole
+    build: balena-pihole/pihole
     privileged: true
     volumes:
       - "pihole_config:/etc/pihole"
@@ -21,14 +21,12 @@ services:
       - "1.1.1.1"
     network_mode: host
     labels:
-      io.balena.features.supervisor-api: 1
       io.balena.features.dbus: "1"
 
   # https://github.com/klutchell/unbound-dnscrypt
   # Recursive DNS, not used
   # unbound:
-  #   build: ./balena-pihole/unbound
-  #   privileged: true
+  #   build: balena-pihole/unbound
   #   ports:
   #     - "5053:5053/tcp"
   #     - "5053:5053/udp"
@@ -39,23 +37,31 @@ services:
   #   image: balenablocks/fbcp:1.0.0
   #   privileged: true
 
+  # https://github.com/balenablocks/hostname
+  hostname:
+    image: balenablocks/hostname:latest
+    restart: no
+    labels:
+      io.balena.features.supervisor-api: 1
+    environment:
+      SET_HOSTNAME: holysound
+
   # **balena-sound**
   # Core services
   # -- Required for a fully featured installation of balenaSound
   # -- Mutiroom services can be removed if not using multiroom mode
   audio:
-    build: ./balena-sound/core/audio
+    build: balena-sound/core/audio
     privileged: true
     labels:
       io.balena.features.dbus: 1
-      io.balena.features.supervisor-api: 1
     ports:
       - 4317:4317
 
   sound-supervisor:
     build:
       context: balena-sound
-      dockerfile: ./core/sound-supervisor/Dockerfile.template
+      dockerfile: core/sound-supervisor/Dockerfile.template
     network_mode: host
     labels:
       io.balena.features.balena-api: '1'
@@ -64,7 +70,7 @@ services:
   # Disable Multiroom with SOUND_MODE=STANDALONE
   # See https://sound.balenalabs.io/docs/customization/
   multiroom-server:
-    build: ./balena-sound/core/multiroom/server
+    build: balena-sound/core/multiroom/server
     restart: on-failure
     ports:
       - 1704:1704
@@ -72,7 +78,7 @@ services:
       - 1780:1780
 
   multiroom-client:
-    build: ./balena-sound/core/multiroom/client
+    build: balena-sound/core/multiroom/client
     restart: on-failure
 
   # https://github.com/balenablocks/log2screen
@@ -92,7 +98,7 @@ services:
   # -- Additional plugins can be added. See https://sound.balenalabs.io/docs/plugins.
   # -- Remove unwanted plugins as needed
   bluetooth:
-    build: ./balena-sound/plugins/bluetooth
+    build: balena-sound/plugins/bluetooth
     restart: on-failure
     network_mode: host
     cap_add:
@@ -101,7 +107,7 @@ services:
       io.balena.features.dbus: 1
 
   airplay:
-    build: ./balena-sound/plugins/airplay
+    build: balena-sound/plugins/airplay
     restart: on-failure
     network_mode: host
     privileged: true
@@ -109,7 +115,7 @@ services:
       io.balena.features.dbus: 1
 
   spotify:
-    build: ./balena-sound/plugins/spotify
+    build: balena-sound/plugins/spotify
     restart: on-failure
     privileged: true
     network_mode: host
