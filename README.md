@@ -66,7 +66,7 @@ Mix [Pi-hole](https://pi-hole.net/) and [balenaSound](https://sound.balenalabs.i
 
 * Build and push **holy-sound** application to balenaCloud
 
-        balena push holy-sound
+        balena push holy-sound --multi-dockerignore
 
 ## Update
 
