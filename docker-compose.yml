@@ -27,6 +27,8 @@ services:
     devices:
       - /dev/tty0
       - /dev/tty1
+    tmpfs:
+      - /var/log/pihole
 
   # https://github.com/klutchell/unbound-dnscrypt
   # Recursive DNS, not used
@@ -85,19 +87,6 @@ services:
   multiroom-client:
     build: balena-sound/core/multiroom/client
     restart: on-failure
-
-  # https://github.com/balenablocks/log2screen
-  # No display to print logs on
-  # logging:
-  #   image: balenablocks/log2screen
-  #   privileged: true
-  #   restart: always
-  #   network_mode: host
-  #   environment:
-  #     - 'DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket'
-  #   labels:
-  #     io.balena.features.dbus: 1
-  #     io.balena.features.supervisor-api: 1
 
   # Plugins
   # -- Additional plugins can be added. See https://sound.balenalabs.io/docs/plugins.
