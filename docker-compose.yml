@@ -2,8 +2,9 @@ version: "2.1"
 
 volumes:
   # **balena-pihole**
-  pihole_config:
-  dnsmasq_config:
+  pihole_config: {}
+  dnsmasq_config: {}
+  # tailscale: {}
   # **balena-sound**
   spotifycache:
 
@@ -29,30 +30,63 @@ services:
       - /dev/tty1
     tmpfs:
       - /var/log/pihole
+    environment:
+      DNSMASQ_LISTENING: all
+      # PIHOLE_DNS_: 1.1.1.1;1.0.0.1
+      FONTFACE: Terminus
+      FONTSIZE: 8x14
+      # WEBPASSWORD: balena
+      VIRTUAL_HOST: balena-devices.com
+      WEB_BIND_ADDR: 0.0.0.0
 
   # https://github.com/klutchell/unbound-dnscrypt
   # Recursive DNS, not used
   # unbound:
-  #   build: balena-pihole/unbound
+  #   build: unbound
+  #   cap_add:
+  #    - NET_ADMIN
   #   ports:
   #     - "5053:5053/tcp"
   #     - "5053:5053/udp"
 
-  # https://github.com/balenablocks/fbcp
+  # https://github.com/balena-labs-projects/fbcp
+  # https://hub.balena.io/blocks/1792683/fbcp
   # Display driver, not used
   # fbcp:
-  #   image: balenablocks/fbcp:1.0.0
+  #   image: bh.cr/balenalabs/fbcp/1.0.4
   #   privileged: true
 
+  # https://github.com/klutchell/balena-tailscale
+  # Tailscale VPN, not used
+  # tailscale:
+  #   build: balena-pihole/tailscale
+  #   network_mode: host
+  #   restart: on-failure
+  #   volumes:
+  #     - tailscale:/var/lib/tailscale
+  #   labels:
+  #     - io.balena.features.kernel-modules=1
+  #   cap_add:
+  #     - net_admin
+  #     - net_raw
+  #     - sys_module
+  #   tmpfs:
+  #     - /tmp
+  #     - /var/run/
+  #   environment:
+  #     TS_EXTRA_ARGS: --accept-dns=false --reset
+  #     REQUIRE_AUTH_KEY: "true"
+  
   # https://github.com/balenablocks/hostname
+  # https://hub.balena.io/blocks/1918776/hostname-rpi
   hostname:
-    build: balena-pihole/hostname
+    image: bh.cr/g_tomas_migone1/hostname-rpi/0.2.1
     restart: no
     labels:
       io.balena.features.supervisor-api: 1
     environment:
       SET_HOSTNAME: holysound
-
+  
   # **balena-sound**
   # Core services
   # -- Required for a fully featured installation of balenaSound
@@ -71,7 +105,7 @@ services:
       dockerfile: core/sound-supervisor/Dockerfile.template
     network_mode: host
     labels:
-      io.balena.features.balena-api: '1'
+      io.balena.features.balena-api: "1"
       io.balena.features.supervisor-api: 1
 
   # Disable Multiroom with SOUND_MODE=STANDALONE
